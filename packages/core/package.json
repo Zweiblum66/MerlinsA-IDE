@@ -21,6 +21,11 @@
     "@types/uuid": "^10.0.0",
     "tsup": "^8.0.0",
     "typescript": "^5.6.0",
-    "vitest": "^2.0.0"
+    "vitest": "^2.0.0",
+    "better-sqlite3": "^11.0.0",
+    "@types/better-sqlite3": "^7.6.0",
+    "@the-ide/naming": "workspace:*",
+    "@the-ide/api-registry": "workspace:*",
+    "@the-ide/wizard": "workspace:*"
   }
 }
