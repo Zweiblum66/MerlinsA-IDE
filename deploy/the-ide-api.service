@@ -1,0 +1,36 @@
+[Unit]
+Description=MerlinsA-IDE API Server
+Documentation=https://github.com/Zweiblum66/MerlinsA-IDE
+After=network.target
+
+[Service]
+Type=simple
+User=the-ide
+Group=the-ide
+WorkingDirectory=/opt/the-ide
+ExecStart=/usr/bin/node packages/api/dist/index.js
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=the-ide-api
+
+# Environment
+Environment=NODE_ENV=production
+Environment=THE_IDE_PORT=3000
+Environment=THE_IDE_HOST=127.0.0.1
+Environment=THE_IDE_DB_PATH=/var/lib/the-ide/the-ide.db
+Environment=THE_IDE_JWT_SECRET=CHANGE_ME_TO_A_RANDOM_SECRET
+Environment=THE_IDE_CORS_ORIGINS=http://localhost,https://your-domain.com
+Environment=THE_IDE_AUTH_USERNAME=admin
+Environment=THE_IDE_AUTH_PASSWORD=CHANGE_ME_TO_A_STRONG_PASSWORD
+
+# Security hardening
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/the-ide
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
