@@ -22,7 +22,7 @@
     "@the-ide/scrum": "workspace:*",
     "@the-ide/token-optimizer": "workspace:*",
     "@the-ide/wizard": "workspace:*",
-    "drizzle-orm": "^0.41.0",
+    "drizzle-orm": "^0.35.0",
     "fastify": "^5.3.3",
     "fastify-plugin": "^5.1.0",
     "uuid": "^11.1.0"

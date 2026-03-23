@@ -97,15 +97,15 @@ USER appuser
 
 # Environment defaults
 ENV NODE_ENV=production
-ENV PORT=3000
+ENV PORT=19700
 ENV HOST=0.0.0.0
 ENV DB_PATH=/data/the-ide.db
 
-EXPOSE 3000
+EXPOSE 19700
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD curl -f http://localhost:3000/api/v1/health || exit 1
+  CMD curl -f http://localhost:19700/api/v1/health || exit 1
 
 # Start the Fastify API server (serves Vue SPA via @fastify/static)
 CMD ["node", "packages/api/dist/index.js"]
