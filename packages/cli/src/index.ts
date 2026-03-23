@@ -6,6 +6,8 @@ import { sprintCommand } from "./commands/sprint.js";
 import { agentCommand } from "./commands/agent.js";
 import { apiCommand } from "./commands/api.js";
 import { reportCommand } from "./commands/report.js";
+import { dashboardCommand } from "./commands/dashboard.js";
+import { auditCommand } from "./commands/audit.js";
 
 const program = new Command();
 
@@ -19,5 +21,7 @@ program.addCommand(sprintCommand);
 program.addCommand(agentCommand);
 program.addCommand(apiCommand);
 program.addCommand(reportCommand);
+program.addCommand(dashboardCommand);
+program.addCommand(auditCommand);
 
 program.parse();
