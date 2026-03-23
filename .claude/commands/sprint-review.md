@@ -1,15 +1,48 @@
-Generate a sprint review report. Steps:
-1. Collect all completed and incomplete stories for the current sprint
-2. Verify each completed story against its acceptance criteria
-3. Check API contract consistency across all changes
-4. Validate naming conventions on all modified files
-5. Calculate sprint velocity (story points completed)
-6. Generate a summary report with:
-   - Sprint goal: met or not met
-   - Stories completed vs planned
-   - Token usage vs budget
-   - API drift status
-   - Naming violation count
-   - Recommendations for next sprint
+Generate a sprint review report. Uses `CeremonyManager`, `VelocityTracker`, and `DefinitionOfDoneChecker` from `@the-ide/scrum`.
 
-Use the scrum-master agent to orchestrate this process.
+## Step 1: Gather Sprint Data
+Call `SprintManager.getActiveSprint(projectId)` to find the current sprint.
+Call `SprintManager.getSprintProgress(sprintId)` to get completion metrics:
+- Total tasks, done, in-progress, blocked
+- Percent complete
+
+## Step 2: Definition of Done Check
+For each completed task, call `DefinitionOfDoneChecker.checkTask(taskId)` to verify:
+- Acceptance criteria met
+- Tests pass
+- No naming violations
+- API contracts consistent
+- No type errors
+- Code review approved
+
+## Step 3: Sprint Review Report
+Call `CeremonyManager.generateSprintReview(sprintId)` which produces:
+- Sprint goal status (met / partially met / not met)
+- Story completion rate (completed vs planned)
+- Token usage vs budget (with cost breakdown by agent and model)
+- List of completed stories with summaries
+- List of incomplete stories with blockers
+
+## Step 4: Record Velocity
+Call `VelocityTracker.recordVelocity(sprintId, completedPoints)` to store the sprint velocity for future capacity prediction.
+
+## Step 5: API Drift Check
+Run `SyncChecker.checkSync()` across all modified files to verify:
+- All backend routes have registered API contracts
+- All frontend API calls match registered contracts
+- No breaking changes were introduced without versioning
+
+## Step 6: Retrospective
+Call `CeremonyManager.generateRetrospective(sprintId)` which analyzes:
+- Completion rate (high/low performance)
+- Blocked tasks (impediment patterns)
+- Token budget adherence
+- Goal drift scores across agents
+- Produces: what went well, what did not go well, improvements for next sprint
+
+## Step 7: Complete Sprint
+Call `SprintManager.completeSprint(sprintId)` which transitions:
+- IN_PROGRESS -> REVIEW -> RETROSPECTIVE -> COMPLETED
+- Sets the sprint endDate
+
+Present the full report to the user and suggest actions for the next sprint.

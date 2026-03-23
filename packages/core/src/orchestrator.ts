@@ -17,20 +17,23 @@ import { DEFAULT_AGENT_CONFIGS } from "./types/agent.js";
 import { AgentManager } from "./agent-manager.js";
 import { GoalTracker } from "./goal-tracker.js";
 import { SessionManager } from "./session-manager.js";
+import { AgentRunner } from "./agent-runner.js";
 
 const TOKEN_BUDGET_WARNING_THRESHOLD = 0.8;
 
 export class Orchestrator {
   private readonly db: TheIdeDatabase;
   private readonly projectId: string;
+  private readonly projectRoot: string;
   private readonly eventBus: EventBus;
   private readonly agentManager: AgentManager;
   private readonly goalTracker: GoalTracker;
   private readonly sessionManager: SessionManager;
 
-  constructor(db: TheIdeDatabase, projectId: string) {
+  constructor(db: TheIdeDatabase, projectId: string, projectRoot?: string) {
     this.db = db;
     this.projectId = projectId;
+    this.projectRoot = projectRoot ?? process.cwd();
     this.eventBus = Orchestrator.createEventBus();
     this.agentManager = new AgentManager(db, this.eventBus);
     this.goalTracker = new GoalTracker(this.eventBus);
@@ -165,8 +168,28 @@ export class Orchestrator {
       .set({ status: "IN_PROGRESS", assignedAgent: agentRole })
       .where(eq(tasks.id, task.id));
 
-    // Spawn the agent
-    await this.agentManager.spawnAgent(config, assignment);
+    // Create runner and register MCP tools
+    const runner = new AgentRunner({
+      projectRoot: this.projectRoot,
+      db: this.db,
+      eventBus: this.eventBus,
+    });
+
+    // Run the agent and handle the result
+    const result = await runner.run(assignment);
+
+    // Update task status based on result.
+    // The DB task schema supports: TODO | IN_PROGRESS | BLOCKED | REVIEW | DONE.
+    // A "failed" runner outcome is mapped to BLOCKED so the scrum master can review.
+    const newStatus =
+      result.status === "completed"
+        ? "DONE"
+        : "BLOCKED";
+
+    await this.db
+      .update(tasks)
+      .set({ status: newStatus })
+      .where(eq(tasks.id, task.id));
   }
 
   async monitorProgress(sprintId: string): Promise<void> {

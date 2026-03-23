@@ -1,0 +1,50 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm *)",
+      "Bash(npm *)",
+      "Bash(npx *)",
+      "Bash(node *)",
+      "Bash(git *)",
+      "Bash(the-ide *)",
+      "mcp__api-registry__*",
+      "mcp__naming__*"
+    ]
+  },
+  "mcpServers": {
+    "api-registry": {
+      "command": "node",
+      "args": ["packages/api-registry/dist/index.js"],
+      "env": {}
+    },
+    "naming": {
+      "command": "node",
+      "args": ["packages/naming/dist/index.js"],
+      "env": {}
+    }
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"const {NamingAnalyzer} = require('./packages/naming/dist/index.js'); const {DEFAULT_NAMING_RULES} = require('./packages/naming/dist/index.js'); const a = new NamingAnalyzer(DEFAULT_NAMING_RULES); /* hook integration point */\""
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'PostToolUse: file modified, checking goal alignment'"
+          }
+        ]
+      }
+    ]
+  }
+}
